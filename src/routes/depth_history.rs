@@ -1,17 +1,13 @@
-use crate::db::get_depth_history_from_db;
-use crate::schema::DepthHistory;
-use axum::{extract::Query, Json};
-use serde::Deserialize;
-
-#[derive(Deserialize)]
-pub struct DepthHistoryQueryParams {
-    page: Option<u32>,
-    limit: Option<u32>,
-}
+// routes/depth_history.rs
+use crate::db::Database;
+use crate::schema::{DepthHistory, HistoryParams};
+use axum::{extract::Extension, extract::Query, response::Json};
+use std::sync::Arc;
 
 pub async fn get_depth_history(
-    Query(params): Query<DepthHistoryQueryParams>,
+    Query(params): Query<HistoryParams>,
+    Extension(db): Extension<Arc<Database>>,
 ) -> Json<Vec<DepthHistory>> {
-    let data = get_depth_history_from_db().await.unwrap();
+    let data = db.get_depth_history(&params).await.unwrap();
     Json(data)
 }
