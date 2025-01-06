@@ -1,0 +1,11 @@
+/Users/macbook/Downloads/midgard-api/target/debug/deps/libsocket2-ec03d4cdf20ee505.rmeta: /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/lib.rs /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockaddr.rs /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/socket.rs /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockref.rs /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sys/unix.rs
+
+/Users/macbook/Downloads/midgard-api/target/debug/deps/libsocket2-ec03d4cdf20ee505.rlib: /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/lib.rs /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockaddr.rs /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/socket.rs /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockref.rs /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sys/unix.rs
+
+/Users/macbook/Downloads/midgard-api/target/debug/deps/socket2-ec03d4cdf20ee505.d: /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/lib.rs /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockaddr.rs /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/socket.rs /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockref.rs /Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sys/unix.rs
+
+/Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/lib.rs:
+/Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockaddr.rs:
+/Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/socket.rs:
+/Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sockref.rs:
+/Users/macbook/.cargo/registry/src/index.crates.io-6f17d22bba15001f/socket2-0.4.10/src/sys/unix.rs:
