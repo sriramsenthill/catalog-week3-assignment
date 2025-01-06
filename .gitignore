@@ -1,0 +1,32 @@
+# Target directory
+/target/
+
+# Build artifacts
+**/*.rs.bk
+
+# Dependency directory
+/Cargo.lock
+
+# Generated files from tests and coverage tools
+/coverage/
+/*.profraw
+
+# IDEs and editors
+/.idea/
+/.vscode/
+/*.sublime-workspace
+/*.sublime-project
+
+# Logs
+/logs/
+/*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Miscellaneous
+*.swp
+*.bak
+*.tmp
+*.old
