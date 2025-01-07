@@ -1,130 +1,146 @@
-# Rust Application for Midgard Data Fetching and API
+
+
+# Midgard Data Fetching and API Documentation
 
 ## Overview
 
-This Rust application fetches data from the Midgard API and stores it in a MongoDB database. The application provides four API endpoints using Actix Web to serve the stored data:
+This Rust application is designed to fetch data from the Midgard API and store it in a MongoDB database. The data is then served through RESTful APIs built with Actix Web, allowing users to access various data points related to Midgard, including:
 
 1. **Depth History**
 2. **Swaps**
 3. **Earnings**
 4. **Rune Pool Units & Counts**
 
-All endpoints support optional query parameters to customize the fetched results.
+The application supports optional query parameters that allow customization of the fetched data. The project is structured in a way that separates concerns into distinct modules, promoting maintainability and scalability.
 
-## Deployment
+## Folder Structure
 
-**Deployed Application:** [Add Deployment Link Here]
+### `src/`
+This is the main folder for the application's code.
 
-## API Documentation
+- **`db/`**: Contains the code responsible for interacting with the MongoDB database, such as fetching data from MongoDB and handling the connection.
+  
+- **`handlers/`**: Responsible for processing incoming HTTP requests. Each handler maps to one of the API endpoints and handles the logic to fetch data from MongoDB or interact with the database layer.
 
-Detailed API documentation is available and has been created using Postman. You can find the complete documentation at the following link:
+- **`utils/`**: Contains utility functions for data manipulation, such as sorting, grouping, and handling date/time conversions. Also includes functions for configuration management.
 
-**Postman Documentation:** [Add Postman Documentation Link Here]
+- **`models/`**: Defines the data models that correspond to the structure of the data being fetched and stored. These models are used when interacting with the database or responding to API requests.
+
+- **`services/`**: Responsible for the logic of fetching data from the database service. This service layer abstracts the database interactions, making it easy to reuse the code for multiple parts of the application.
+
+- **`state/`**: Holds the application state, such as global variables and configurations that need to be shared across various parts of the application.
+
+- **`routes/`**: Contains the routing definitions for the Actix Web server. This folder sets up the different API endpoints and connects them to their respective handlers.
+
+- **`error/`**: Contains error handling logic related to MongoDB operations, ensuring graceful error responses when MongoDB interactions fail.
 
 ## Features
 
-- Fetches data from four endpoints of the Midgard API:
-  - **Depth History**
-  - **Swaps**
-  - **Earnings**
-  - **Rune Pool Units & Counts**
-- Stores the fetched data in a MongoDB database.
-- Exposes RESTful API endpoints using Actix Web to fetch the stored data with optional query parameters.
+- **Data Fetching**: Fetches data from the Midgard API and stores it in a MongoDB database.
+- **Actix Web API Endpoints**: Provides four RESTful API endpoints that allow querying of stored data.
+- **Query Parameters**: The API supports optional query parameters to customize the data being fetched, such as `date_range`, `sort_by`, `order`, and `limit`.
 
 ## API Endpoints
 
+The application exposes the following endpoints:
+
 ### 1. Depth History
-**Endpoint:** `/depths`
+- **Endpoint**: `/depths`
+- **Query Parameters**:
+  - `date_range` (e.g., `2024-11-01,2023-10-02`)
+  - `sort_by` (e.g., `asset_price`)
+  - `order` (e.g., `asc` or `desc`)
+  - `limit` (e.g., `24`)
 
-**Query Parameters:**
-- `date_range` (e.g., `2024-11-01,2023-10-02`)
-- `sort_by` (e.g., `asset_price`)
-- `order` (e.g., `asc` or `desc`)
-- `limit` (e.g., `24`)
-- `page` (e.g., `1`)
-
-**Sample Query:**
-```bash
-curl -X GET 'http://localhost:3000/depths?date_range=2024-11-01,2023-10-02&sort_by=asset_price&order=desc&limit=24&page=1'
-```
-
+- **Sample Query**:
+  ```bash
+  curl -X GET 'http://localhost:3000/api/depths?date_range=2024-11-01,2023-10-02'
+  ```
+   ```bash
+  curl -X GET 'http://localhost:3000/api/earnings'
+  ```
+    ```bash
+  curl -X GET 'http://localhost:3000/api/swaps?sort_by=runePriceUSD&limit=25&order=desc'
+  ```
+    ```bash
+  curl -X GET 'http://localhost:3000/api/runepool?limit=25&order=desc'
+  ```
 ### 2. Swaps
-**Endpoint:** `/swaps`
-
-**Query Parameters:**
-- `date_range` (e.g., `2024-11-01,2023-10-02`)
-- `sort_by` (e.g., `asset_price`)
-- `order` (e.g., `asc` or `desc`)
-- `limit` (e.g., `24`)
-- `page` (e.g., `1`)
+- **Endpoint**: `/swaps`
+- **Query Parameters**:
+  - `date_range` (e.g., `2024-11-01,2023-10-02`)
+  - `sort_by` (e.g., `asset_price`)
+  - `order` (e.g., `asc` or `desc`)
+  - `limit` (e.g., `24`)
 
 ### 3. Earnings
-**Endpoint:** `/earnings`
-
-**Query Parameters:**
-- `date_range` (e.g., `2024-11-01,2023-10-02`)
-- `sort_by` (e.g., `asset_price`)
-- `order` (e.g., `asc` or `desc`)
-- `limit` (e.g., `24`)
-- `page` (e.g., `1`)
+- **Endpoint**: `/earnings`
+- **Query Parameters**:
+  - `date_range` (e.g., `2024-11-01,2023-10-02`)
+  - `sort_by` (e.g., `asset_price`)
+  - `order` (e.g., `asc` or `desc`)
+  - `limit` (e.g., `24`)
 
 ### 4. Rune Pool Units & Counts
-**Endpoint:** `/runepool_units_counts`
-
-**Query Parameters:**
-- `date_range` (e.g., `2024-11-01,2023-10-02`)
-- `sort_by` (e.g., `asset_price`)
-- `order` (e.g., `asc` or `desc`)
-- `limit` (e.g., `24`)
-- `page` (e.g., `1`)
-
-## Prerequisites
-
-### 1. Rust
-Ensure Rust is installed. You can install it from [Rust's official website](https://www.rust-lang.org/).
-
-### 2. MongoDB
-Install and configure MongoDB. For local development, ensure MongoDB is running on the default port or update the connection string in the application code.
-
-### 3. Actix Web
-The application uses Actix Web for creating RESTful APIs. Ensure the Actix Web crate is included in your `Cargo.toml` file.
+- **Endpoint**: `/runepools`
+- **Query Parameters**:
+  - `date_range` (e.g., `2024-11-01,2023-10-02`)
+  - `sort_by` (e.g., `asset_price`)
+  - `order` (e.g., `asc` or `desc`)
+  - `limit` (e.g., `24`)
 
 ## Setup Instructions
 
-1. Clone the repository:
+1. **Clone the repository**:
    ```bash
    git clone <repository-link>
    ```
 
-2. Navigate to the project directory:
+2. **Navigate to the project directory**:
    ```bash
    cd <project-directory>
    ```
 
-3. Install dependencies:
+3. **Install dependencies**:
    ```bash
    cargo build
    ```
 
-4. Run the application:
+4. **Run the application**:
    ```bash
    cargo run
    ```
 
-5. Access the APIs at `http://localhost:<port>`.
+5. **Access the APIs**:
+   Open your browser or use `curl` to access the APIs at `http://localhost:<port>`.
+
+## Prerequisites
+
+- **Rust**: Make sure Rust is installed. You can install it from [Rust's official website](https://www.rust-lang.org/).
+- **MongoDB**: Ensure MongoDB is running locally or configure the connection string to use a remote MongoDB instance.
+- **Actix Web**: Ensure the Actix Web crate is added to the `Cargo.toml` file for building RESTful APIs.
 
 ## Environment Variables
 
+- **MONGODB_URI**: The MongoDB connection string.
+- **DATABASE_NAME**: The MongoDB database name.
+- **COLLECTION_NAME**: The MongoDB collection name.
+- **SERVER_ADDR**: The address where the Actix Web server will run (e.g., `0.0.0.0:3000`).
 
-- `MONGODB_URI`: MongoDB connection string.
-- `DATABASE_NAME`: MongoDB database.
-- `COLLECTION_NAME`: MongoDB collection.
+## Error Handling
 
+The application uses custom error handling, especially for MongoDB interactions. Errors such as connection failures, query issues, or missing data are caught and appropriate error messages are returned to the user.
 
+## Best Practices
+
+- **Use Query Parameters Wisely**: Not all query parameters can be used together at the same time. Be mindful of the potential conflicts when using `date_range`, `sort_by`, `order`, and `limit`.
+- **Efficient Data Fetching**: For large datasets, be cautious with the `limit` parameter to avoid overwhelming the database or causing long API response times.
+- **Error Handling**: Ensure that all potential error states are handled gracefully, particularly with MongoDB connections or when fetching non-existent data.
+- **Testing**: Always test the API with different combinations of query parameters to ensure the application behaves as expected under different conditions.
 
 ## Acknowledgments
 
-- **Midgard API**: Used for data fetching.
-- **Actix Web**: For building RESTful APIs.
-- **Postman**: For API documentation.
+- **Midgard API**: Provides the data that the application fetches and processes.
+- **Actix Web**: Used for building the RESTful API.
+- **Postman**: Used for creating the API documentation.
 

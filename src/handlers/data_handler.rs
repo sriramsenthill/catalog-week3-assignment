@@ -1,7 +1,7 @@
 use crate::models::{collection_type::CollectionType, query_params::QueryParams};
 use crate::services::data_service::DataService;
 use actix_web::{web, HttpResponse};
-use serde::{de::DeserializeOwned, Serialize};
+use serde::de::DeserializeOwned;
 
 pub async fn get_data<T>(
     collection_type: CollectionType,

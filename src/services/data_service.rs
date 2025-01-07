@@ -1,8 +1,5 @@
 use crate::db::base_db::BaseDB;
-use crate::models::{
-    collection_type::CollectionType, depth_model::Depth, earnings_model::Earnings,
-    query_params::QueryParams, runepools_model::RunePool, swaps_model::Swaps,
-};
+use crate::models::{collection_type::CollectionType, query_params::QueryParams};
 use mongodb::Database;
 use serde::de::DeserializeOwned;
 

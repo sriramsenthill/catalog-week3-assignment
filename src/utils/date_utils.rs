@@ -1,5 +1,5 @@
 // utils/date_utils.rs
-use chrono::{DateTime, TimeZone, Utc};
+use chrono::{DateTime, Utc};
 use log::warn;
 
 #[derive(Debug)]
@@ -35,8 +35,4 @@ pub fn parse_date_range(date_range: &str) -> Option<DateRange> {
         start: parse_date(start_date_str, false),
         end: parse_date(end_date_str, true),
     })
-}
-
-pub fn validate_interval(interval: &str) -> bool {
-    matches!(interval, "hour" | "day")
 }

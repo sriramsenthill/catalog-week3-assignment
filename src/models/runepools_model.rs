@@ -1,7 +1,5 @@
-use crate::utils::serialization_utils::{
-    serialize_datetime_as_timestamp, serialize_decimal_as_string,
-};
-use bson::{DateTime as BsonDateTime, Decimal128};
+use crate::utils::serialization_utils::serialize_datetime_as_timestamp;
+use bson::DateTime as BsonDateTime;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
