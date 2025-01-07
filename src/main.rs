@@ -57,7 +57,7 @@ impl AppConfig {
 }
 
 struct AppState {
-    depth_service: web::Data<services::depth_service::DepthService>,
+    data_service: web::Data<services::data_service::DataService>,
 }
 
 impl AppState {
@@ -68,10 +68,10 @@ impl AppState {
 
         info!("Connected to MongoDB at {}", config.mongodb_uri);
 
-        let depth_db = db::depth_db::DepthDB::new(&db);
-        let depth_service = web::Data::new(services::depth_service::DepthService::new(depth_db));
+        // Create DataService with database reference
+        let data_service = web::Data::new(services::data_service::DataService::new(&db));
 
-        Ok(Self { depth_service })
+        Ok(Self { data_service })
     }
 }
 
@@ -81,7 +81,7 @@ async fn setup_app(
 ) -> Result<actix_web::dev::Server, std::io::Error> {
     let server = HttpServer::new(move || {
         App::new()
-            .app_data(state.depth_service.clone())
+            .app_data(state.data_service.clone())
             .configure(routes::config)
             .wrap(actix_web::middleware::Logger::default())
             .wrap(actix_web::middleware::Compress::default())
