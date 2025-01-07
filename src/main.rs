@@ -1,7 +1,9 @@
 use actix_web::{web, App, HttpServer};
 use dotenv::dotenv;
-use log::info;
+use log::{error, info};
 use std::env;
+use std::error::Error as StdError;
+use std::net::SocketAddr;
 
 mod db;
 mod error;
@@ -11,32 +13,104 @@ mod routes;
 mod services;
 mod utils;
 
+#[derive(Debug)]
+struct AppConfig {
+    mongodb_uri: String,
+    database_name: String,
+    server_addr: SocketAddr,
+}
+
+// Custom error type that implements necessary traits
+#[derive(Debug)]
+struct AppError(String);
+
+impl std::fmt::Display for AppError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
+impl StdError for AppError {}
+
+// Make AppError thread-safe
+impl From<AppError> for std::io::Error {
+    fn from(error: AppError) -> Self {
+        std::io::Error::new(std::io::ErrorKind::Other, error.0)
+    }
+}
+
+impl AppConfig {
+    fn from_env() -> Result<Self, AppError> {
+        dotenv().ok();
+
+        Ok(Self {
+            mongodb_uri: env::var("MONGODB_URI")
+                .map_err(|_| AppError("MONGODB_URI must be set".to_string()))?,
+            database_name: env::var("DATABASE_NAME")
+                .map_err(|_| AppError("DATABASE_NAME must be set".to_string()))?,
+            server_addr: env::var("SERVER_ADDR")
+                .unwrap_or_else(|_| "0.0.0.0:3000".to_string())
+                .parse()
+                .map_err(|_| AppError("Invalid SERVER_ADDR format".to_string()))?,
+        })
+    }
+}
+
+struct AppState {
+    depth_service: web::Data<services::depth_service::DepthService>,
+}
+
+impl AppState {
+    async fn new(config: &AppConfig) -> Result<Self, AppError> {
+        let db = db::init_db(&config.mongodb_uri, &config.database_name)
+            .await
+            .map_err(|e| AppError(format!("Database initialization failed: {}", e)))?;
+
+        info!("Connected to MongoDB at {}", config.mongodb_uri);
+
+        let depth_db = db::depth_db::DepthDB::new(&db);
+        let depth_service = web::Data::new(services::depth_service::DepthService::new(depth_db));
+
+        Ok(Self { depth_service })
+    }
+}
+
+async fn setup_app(
+    config: AppConfig,
+    state: AppState,
+) -> Result<actix_web::dev::Server, std::io::Error> {
+    let server = HttpServer::new(move || {
+        App::new()
+            .app_data(state.depth_service.clone())
+            .configure(routes::config)
+            .wrap(actix_web::middleware::Logger::default())
+            .wrap(actix_web::middleware::Compress::default())
+    })
+    .bind(config.server_addr)?
+    .run();
+
+    Ok(server)
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    dotenv().ok();
-    env_logger::init();
+    // Initialize logger
+    env_logger::init_from_env(env_logger::Env::default().default_filter_or("info"));
 
-    let mongodb_uri = env::var("MONGODB_URI").expect("MONGODB_URI must be set");
-    let database_name = env::var("DATABASE_NAME").expect("DATABASE_NAME must be set");
+    // Load configuration
+    let config =
+        AppConfig::from_env().map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.0))?;
 
-    let db = db::init_db(&mongodb_uri, &database_name)
+    info!("Starting server with configuration: {:?}", config);
+
+    // Initialize application state
+    let state = AppState::new(&config)
         .await
-        .expect("Failed to connect to MongoDB");
+        .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e.0))?;
 
-    info!("Connected to MongoDB");
+    // Start server
+    let server = setup_app(config, state).await?;
+    info!("Server started successfully");
 
-    // Create an instance of DepthDB
-    let depth_db = db::depth_db::DepthDB::new(&db); // Ensure this matches your DepthDB constructor
-
-    // Create an instance of DepthService
-    let depth_service = web::Data::new(services::depth_service::DepthService::new(depth_db));
-
-    HttpServer::new(move || {
-        App::new()
-            .app_data(depth_service.clone()) // Ensure DepthService is added here
-            .configure(routes::config)
-    })
-    .bind(("0.0.0.0", 3000))?
-    .run()
-    .await
+    server.await
 }

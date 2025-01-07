@@ -31,7 +31,9 @@ impl DepthDB {
 
         let mut pipeline = Vec::new();
 
-        if let Some(match_stage) = build_match_stage(&params.date_range) {
+        let interval = params.interval.as_deref().unwrap_or("hour");
+
+        if let Some(match_stage) = build_match_stage(&params.date_range, interval) {
             pipeline.push(match_stage);
         }
 
