@@ -45,7 +45,7 @@ Detailed API documentation is available and has been created using Postman. You 
 
 **Sample Query:**
 ```bash
-curl -X GET 'http://localhost:8080/depths?date_range=2024-11-01,2023-10-02&sort_by=asset_price&order=desc&limit=24&page=1'
+curl -X GET 'http://localhost:3000/depths?date_range=2024-11-01,2023-10-02&sort_by=asset_price&order=desc&limit=24&page=1'
 ```
 
 ### 2. Swaps
@@ -115,12 +115,12 @@ The application uses Actix Web for creating RESTful APIs. Ensure the Actix Web c
 
 ## Environment Variables
 
-- `MONGO_URI`: MongoDB connection string.
-- `PORT`: Port for the application to run.
 
-## License
+- `MONGODB_URI`: MongoDB connection string.
+- `DATABASE_NAME`: MongoDB database.
+- `COLLECTION_NAME`: MongoDB collection.
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+
 
 ## Acknowledgments
 
@@ -128,5 +128,3 @@ This project is licensed under the MIT License. See the LICENSE file for details
 - **Actix Web**: For building RESTful APIs.
 - **Postman**: For API documentation.
 
----
-Feel free to customize this `README.md` file as per your project's specific details and requirements.
