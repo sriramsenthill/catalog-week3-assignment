@@ -1,24 +1,17 @@
-use chrono::{DateTime, Local, TimeZone, Utc};
+// utils/date_utils.rs
+use chrono::{DateTime, TimeZone, Utc};
 use log::warn;
 
-/// Parses a date range in the format "YYYY-MM-DD,YYYY-MM-DD".
-/// Returns `None` if the format is invalid or parsing fails.
+#[derive(Debug)]
+pub struct DateRange {
+    pub start: Option<DateTime<Utc>>,
+    pub end: Option<DateTime<Utc>>,
+}
 
 pub fn parse_date_range(date_range: &str) -> Option<DateRange> {
-    let end_date_str = if date_range.contains(',') {
-        date_range.split(',').nth(1).unwrap_or(date_range)
-    } else {
-        date_range
-    };
-
-    // Create the end date string with proper lifetime
-    let end_date_with_time = format!("{} 23:59:59", end_date_str);
-
-    let dates: Vec<&str> = if date_range.contains(',') {
-        date_range.split(',').collect()
-    } else {
-        vec![date_range, &end_date_with_time]
-    };
+    let dates: Vec<&str> = date_range.split(',').collect();
+    let start_date_str = dates[0];
+    let end_date_str = dates.get(1).unwrap_or(&start_date_str);
 
     let parse_date = |date: &str, is_end: bool| {
         if date.trim().is_empty() {
@@ -38,22 +31,12 @@ pub fn parse_date_range(date_range: &str) -> Option<DateRange> {
         }
     };
 
-    let start_date = parse_date(dates[0], false);
-    let end_date = parse_date(dates[1], true);
-
     Some(DateRange {
-        start: start_date,
-        end: end_date,
+        start: parse_date(start_date_str, false),
+        end: parse_date(end_date_str, true),
     })
 }
 
-/// Validates that the interval is either "hour" or "day".
 pub fn validate_interval(interval: &str) -> bool {
     matches!(interval, "hour" | "day")
-}
-
-#[derive(Debug)]
-pub struct DateRange {
-    pub start: Option<DateTime<Utc>>,
-    pub end: Option<DateTime<Utc>>,
 }

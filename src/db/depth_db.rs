@@ -1,11 +1,11 @@
 // db/depth_db.rs
 use crate::models::{depth_model::Depth, query_params::QueryParams};
-use crate::utils::{add_pagination_stages, build_group_stage, build_match_stage, build_sort_stage};
+use crate::utils::{build_match_stage, build_sort_stage};
 use bson::{doc, from_document, Document};
 use futures::stream::TryStreamExt;
 use mongodb::{error::Error as MongoError, Collection, Database};
 
-const DEFAULT_LIMIT: i64 = 10;
+const DEFAULT_LIMIT: i64 = 24;
 const MAX_RECORDS_NO_FILTER: i64 = 400;
 
 pub struct DepthDB {
@@ -25,32 +25,29 @@ impl DepthDB {
     }
 
     fn build_pipeline(&self, params: &QueryParams) -> Vec<Document> {
-        if self.should_use_simple_query(params) {
+        let mut pipeline = Vec::new();
+
+        // Handle no filter case with max limit
+        if params.date_range.is_none() && params.sort_by.is_none() {
             return vec![doc! { "$limit": MAX_RECORDS_NO_FILTER }];
         }
 
-        let mut pipeline = Vec::new();
-
-        let interval = params.interval.as_deref().unwrap_or("hour");
-
-        if let Some(match_stage) = build_match_stage(&params.date_range, interval) {
+        if let Some(match_stage) = build_match_stage(&params.date_range) {
             pipeline.push(match_stage);
-        }
-
-        if let Some(group_stage) = build_group_stage(&params.interval) {
-            pipeline.push(group_stage);
         }
 
         if let Some(sort_stage) = build_sort_stage(&params.sort_by, &params.order) {
             pipeline.push(sort_stage);
         }
 
-        add_pagination_stages(&mut pipeline, params);
-        pipeline
-    }
+        // Add limit before pagination
+        let limit = params
+            .limit
+            .unwrap_or(DEFAULT_LIMIT)
+            .min(MAX_RECORDS_NO_FILTER) as i64;
+        pipeline.push(doc! { "$limit": limit });
 
-    fn should_use_simple_query(&self, params: &QueryParams) -> bool {
-        params.date_range.is_none() && params.interval.is_none() && params.sort_by.is_none()
+        pipeline
     }
 
     async fn execute_pipeline(&self, pipeline: Vec<Document>) -> Result<Vec<Depth>, MongoError> {
@@ -64,7 +61,6 @@ impl DepthDB {
             }
         }
 
-        log::debug!("Depths found: {:?}", depths);
         Ok(depths)
     }
 }
