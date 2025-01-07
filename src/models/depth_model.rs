@@ -2,18 +2,7 @@ use crate::utils::serialization_utils::{
     serialize_datetime_as_timestamp, serialize_decimal_as_string,
 };
 use bson::{DateTime as BsonDateTime, Decimal128};
-use chrono::{DateTime, Utc};
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
-
-#[derive(Debug, Deserialize)]
-pub struct QueryParams {
-    pub interval: Option<String>,
-    pub date_range: Option<String>,
-    pub sort_by: Option<String>,
-    pub order: Option<String>,
-    pub limit: Option<i64>,
-    pub page: Option<i64>,
-}
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Depth {

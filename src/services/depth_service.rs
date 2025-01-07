@@ -1,5 +1,5 @@
 use crate::db::depth_db::DepthDB;
-use crate::models::depth_model::{Depth, QueryParams};
+use crate::models::{depth_model::Depth, query_params::QueryParams};
 
 pub struct DepthService {
     db: DepthDB,

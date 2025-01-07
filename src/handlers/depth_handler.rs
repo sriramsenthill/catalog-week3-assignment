@@ -1,4 +1,4 @@
-use crate::models::depth_model::QueryParams;
+use crate::models::query_params::QueryParams;
 use crate::services::depth_service::DepthService;
 use actix_web::{web, HttpResponse};
 
